@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adventure Bags Entry Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080d13;
+  --s1: #0e1520;
+  --s2: #141d2e;
+  --s3: #1a2540;
+  --b1: #243045;
+  --b2: #2e3d58;
+  --t1: #c8d8ec;
+  --t2: #7090b8;
+  --t3: #405878;
+  --green: #3dd68c;
+  --green-d: #28a068;
+  --green-g: rgba(61,214,140,0.12);
+  --gold: #e3b341;
+  --gold-d: #b08828;
+  --red: #f07068;
+  --blue: #79b8ff;
+  --r: 6px;
+  --rl: 10px;
+  --fh: 'Chakra Petch', sans-serif;
+  --fb: 'DM Sans', sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+  --fp: 'Press Start 2P', monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body {
+  background: var(--bg);
+  background-image: radial-gradient(ellipse at 15% 10%, rgba(61,214,140,.04) 0%, transparent 55%),
+                    radial-gradient(ellipse at 85% 90%, rgba(227,179,65,.03) 0%, transparent 50%);
+  color: var(--t1);
+  font-family: var(--fb);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* HEADER */
+.hdr {
+  background: var(--s1);
+  border-bottom: 1px solid var(--b1);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,.5);
+}
+.hdr-left { display: flex; align-items: baseline; gap: 14px; }
+.hdr-logo { font-family: var(--fp); font-size: 9px; color: var(--green); line-height: 1.7; }
+.hdr-logo span { color: var(--gold); }
+.hdr-tag { font-family: var(--fh); font-size: 11px; color: var(--t3); letter-spacing: .5px; }
+.hdr-note { font-size: 11px; color: var(--t3); font-family: var(--fh); }
+.hdr-note b { color: var(--gold); }
+
+/* MAIN */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 16px 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* CARD */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.card:has(.ctoggle:checked) { border-color: var(--b2); }
+
+.chead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--s2);
+  border-bottom: 1px solid var(--b1);
+  cursor: pointer;
+  user-select: none;
+}
+.chead.no-click { cursor: default; }
+.ctitle {
+  font-family: var(--fh);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--t1);
+  flex: 1;
+}
+.ctoggle {
+  appearance: none;
+  width: 34px; height: 18px;
+  background: var(--s3);
+  border: 1px solid var(--b2);
+  border-radius: 9px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .18s, border-color .18s;
+}
+.ctoggle::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  background: var(--t3);
+  border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: transform .18s, background .18s;
+}
+.ctoggle:checked { background: var(--green-d); border-color: var(--green); }
+.ctoggle:checked::after { transform: translateX(16px); background: var(--green); }
+.chevron { width: 14px; height: 14px; color: var(--t3); transition: transform .18s; flex-shrink: 0; }
+.chead.open .chevron { transform: rotate(180deg); }
+.cbody { padding: 14px 16px; }
+.cbody.hidden { display: none; }
+
+/* FORMS */
+.flabel {
+  font-family: var(--fh);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--t2);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+input[type=text], input[type=number], select {
+  width: 100%;
+  background: var(--s3);
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  color: var(--t1);
+  font-family: var(--fb);
+  font-size: 13px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input[type=text]:focus, input[type=number]:focus, select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-g);
+}
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23405878' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  padding-right: 26px;
+}
+input::placeholder { color: var(--t3); }
+
+.grid { display: grid; gap: 10px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.fg { display: flex; flex-direction: column; }
+
+/* TOOLTIP */
+.tip { position: relative; display: inline-flex; align-items: center; }
+.tip-icon {
+  width: 15px; height: 15px;
+  background: var(--s3); border: 1px solid var(--b2); border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--t3); cursor: help;
+  font-family: var(--fh); font-weight: 700;
+}
+.tip-icon:hover + .tip-box, .tip-icon:focus + .tip-box { opacity: 1; pointer-events: auto; }
+.tip-box {
+  position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+  background: var(--s3); border: 1px solid var(--b2); border-radius: var(--r);
+  padding: 8px 11px; width: 230px; font-size: 12px; color: var(--t2);
+  line-height: 1.55; opacity: 0; pointer-events: none; transition: opacity .15s;
+  z-index: 200; box-shadow: 0 6px 20px rgba(0,0,0,.6);
+}
+.tip-box b { color: var(--green); }
+.tip-box br { line-height: 2; }
+
+/* SEARCHABLE SELECT */
+.ss { position: relative; }
+.ss-drop {
+  position: absolute; top: calc(100% + 3px); left: 0; right: 0;
+  background: var(--s2); border: 1px solid var(--b2); border-radius: var(--r);
+  max-height: 260px; overflow-y: auto; z-index: 300;
+  box-shadow: 0 8px 28px rgba(0,0,0,.6);
+}
+.ss-drop.h { display: none; }
+.ss-grp {
+  padding: 5px 10px 3px; font-size: 10px; color: var(--t3);
+  font-family: var(--fh); text-transform: uppercase; letter-spacing: .8px;
+  border-top: 1px solid var(--b1); margin-top: 2px;
+}
+.ss-grp:first-child { border-top: none; margin-top: 0; }
+.ss-opt {
+  padding: 6px 12px; cursor: pointer; font-size: 13px; color: var(--t2);
+  transition: background .1s, color .1s; display: flex; align-items: center; gap: 8px;
+}
+.ss-opt:hover { background: var(--s3); color: var(--t1); }
+.ss-opt.sel { color: var(--green); background: var(--green-g); }
+.ss-opt-id { font-size: 10px; color: var(--t3); font-family: var(--fm); flex-shrink: 0; }
+.ss-empty { padding: 14px; text-align: center; color: var(--t3); font-size: 12px; font-style: italic; }
+
+/* LIST ITEMS (enchants, attrs, lore, container) */
+.lsec { display: flex; flex-direction: column; gap: 7px; }
+.litem {
+  display: flex; align-items: flex-start; gap: 7px;
+  background: var(--s2); border: 1px solid var(--b1); border-radius: var(--r); padding: 10px;
+}
+.lfields { flex: 1; display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.lfields .fg { flex: 1; min-width: 75px; }
+.lfields .fg .flabel { margin-bottom: 4px; }
+.rm {
+  background: transparent; border: 1px solid var(--b1); border-radius: var(--r);
+  color: var(--red); padding: 3px 7px; cursor: pointer; font-size: 14px; line-height: 1;
+  transition: background .15s, border-color .15s; flex-shrink: 0; align-self: flex-end; margin-bottom: 1px;
+}
+.rm:hover { background: rgba(240,112,104,.1); border-color: var(--red); }
+.add {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; background: transparent; border: 1px dashed var(--b2); border-radius: var(--r);
+  color: var(--t2); padding: 7px; font-size: 12px; cursor: pointer; font-family: var(--fh);
+  letter-spacing: .3px; transition: border-color .15s, color .15s; margin-top: 7px;
+}
+.add:hover { border-color: var(--green); color: var(--green); }
+
+/* COLOR PICKER */
+.swatches { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 6px; }
+.sw {
+  width: 19px; height: 19px; border-radius: 3px; cursor: pointer;
+  border: 2px solid transparent; transition: border-color .1s, transform .1s;
+  flex-shrink: 0;
+}
+.sw:hover { transform: scale(1.2); }
+.sw.on { border-color: #fff; }
+.col-row { display: flex; align-items: center; gap: 6px; }
+.col-row input { flex: 1; }
+.col-preview { width: 26px; height: 26px; border-radius: var(--r); border: 1px solid var(--b1); flex-shrink: 0; }
+.col-clr {
+  background: transparent; border: 1px solid var(--b1); border-radius: var(--r);
+  color: var(--t3); padding: 3px 7px; cursor: pointer; font-size: 11px;
+  transition: color .15s, border-color .15s;
+}
+.col-clr:hover { color: var(--t1); border-color: var(--b2); }
+
+/* CHECKBOX ROW */
+.cbrow { display: flex; align-items: center; gap: 7px; }
+.cbrow input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
+.cbrow span { font-size: 13px; color: var(--t2); cursor: pointer; }
+
+/* DIVIDER */
+.div { height: 1px; background: var(--b1); margin: 12px 0; }
+
+/* OUTPUT PANEL */
+.outp {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--s1); border-top: 1px solid var(--b2);
+  padding: 10px 16px 12px; z-index: 100;
+  box-shadow: 0 -4px 28px rgba(0,0,0,.6);
+}
+.outp-inner { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 7px; }
+.orow { display: flex; gap: 7px; align-items: center; }
+.olbl {
+  font-family: var(--fh); font-size: 10px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--t3); min-width: 46px; flex-shrink: 0;
+}
+.obox {
+  flex: 1; background: var(--s3); border: 1px solid var(--b1); border-radius: var(--r);
+  padding: 6px 11px; font-family: var(--fm); font-size: 11.5px; color: var(--green);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 31px;
+  display: flex; align-items: center;
+}
+.obox.empty { color: var(--t3); font-style: italic; font-family: var(--fb); font-size: 12px; }
+.cpybtn {
+  background: var(--s3); border: 1px solid var(--b2); border-radius: var(--r);
+  color: var(--t2); padding: 5px 11px; font-size: 11px; font-family: var(--fh);
+  cursor: pointer; transition: all .15s; white-space: nowrap; letter-spacing: .3px;
+}
+.cpybtn:hover { background: var(--s2); color: var(--t1); border-color: var(--green); }
+.cpybtn.ok { color: var(--green); border-color: var(--green); background: var(--green-g); }
+.genbtn {
+  width: 100%; background: linear-gradient(135deg, var(--green-d), var(--green));
+  border: none; border-radius: var(--r); color: #061010;
+  font-family: var(--fh); font-weight: 600; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  padding: 9px; cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.genbtn:hover { opacity: .9; transform: translateY(-1px); }
+.genbtn:active { transform: translateY(0); }
+
+/* LORE ITEM STYLE TOGGLE */
+.lore-style-toggle {
+  background: transparent; border: 1px solid var(--b1); border-radius: var(--r);
+  color: var(--t3); padding: 2px 7px; font-size: 11px; cursor: pointer; font-family: var(--fh);
+  transition: color .15s, border-color .15s; white-space: nowrap; align-self: flex-end; margin-bottom: 1px;
+}
+.lore-style-toggle:hover, .lore-style-toggle.on { color: var(--gold); border-color: var(--gold-d); }
+.lore-style-panel { display: none; margin-top: 8px; width: 100%; }
+.lore-style-panel.on { display: block; }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo">Adventure Bags</div>
+    <div class="hdr-tag">Entry Builder — Java 26.1</div>
+  </div>
+  <div class="hdr-note">Generates entries for <b><a href="https://modrinth.com/mod/adventure-bags">Adventure Bags</a></b> config files</div>
+</header>
+
+<main class="main">
+
+  <!-- ITEM + AMOUNT -->
+  <div class="card">
+    <div class="chead no-click">
+      <span class="ctitle">Item &amp; Amount</span>
+    </div>
+    <div class="cbody">
+      <div class="grid" style="gap:12px;">
+        <div class="fg" style="grid-column:1/-1;">
+          <div class="flabel">Item ID</div>
+          <div class="ss" id="ss-wrap">
+            <input type="text" id="ss-input" placeholder="Search items… (e.g. diamond sword, chest)">
+            <div class="ss-drop h" id="ss-drop"></div>
+          </div>
+        </div>
+        <div class="grid g2" style="grid-column:1/-1;gap:10px;">
+          <div class="fg">
+            <div class="flabel">
+              Min Amount
+              <div class="tip">
+                <span class="tip-icon" tabindex="0">?</span>
+                <div class="tip-box"><b>Min Amount</b><br>Minimum items to drop. Leave blank to always drop exactly <b>1</b>.</div>
+              </div>
+            </div>
+            <input type="number" id="min-amt" min="1" max="64" placeholder="1 (default)">
+          </div>
+          <div class="fg">
+            <div class="flabel">
+              Max Amount
+              <div class="tip">
+                <span class="tip-icon" tabindex="0">?</span>
+                <div class="tip-box"><b>Max Amount</b><br>When different from Min, a <b>random</b> amount between Min and Max (inclusive) is dropped each time. Leave blank to always drop exactly the Min amount.</div>
+              </div>
+            </div>
+            <input type="number" id="max-amt" min="1" max="64" placeholder="Same as min">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM NAME -->
+  <div class="card" id="card-name">
+    <div class="chead" onclick="toggleCard('name')">
+      <input type="checkbox" class="ctoggle" id="tog-name" onclick="event.stopPropagation()" onchange="onToggle('name',this.checked)">
+      <span class="ctitle">Custom Name</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-name">
+      <div class="grid g2" style="gap:12px;">
+        <div class="fg" style="grid-column:1/-1;">
+          <div class="flabel">Name Text</div>
+          <input type="text" id="name-txt" placeholder="e.g. Super Sword">
+        </div>
+        <div class="fg">
+          <div class="flabel">Color</div>
+          <div id="name-color"></div>
+        </div>
+        <div class="fg">
+          <div class="flabel">Style</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:3px;">
+            <label class="cbrow"><input type="checkbox" id="name-bold"><span style="font-weight:700;">Bold</span></label>
+            <label class="cbrow"><input type="checkbox" id="name-italic"><span style="font-style:italic;">Italic</span></label>
+            <label class="cbrow"><input type="checkbox" id="name-under"><span style="text-decoration:underline;">Underline</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LORE -->
+  <div class="card" id="card-lore">
+    <div class="chead" onclick="toggleCard('lore')">
+      <input type="checkbox" class="ctoggle" id="tog-lore" onclick="event.stopPropagation()" onchange="onToggle('lore',this.checked)">
+      <span class="ctitle">Lore</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-lore">
+      <div class="lsec" id="lore-list"></div>
+      <button class="add" onclick="addLore()">+ Add Lore Line</button>
+    </div>
+  </div>
+
+  <!-- ENCHANTMENTS -->
+  <div class="card" id="card-ench">
+    <div class="chead" onclick="toggleCard('ench')">
+      <input type="checkbox" class="ctoggle" id="tog-ench" onclick="event.stopPropagation()" onchange="onToggle('ench',this.checked)">
+      <span class="ctitle">Enchantments</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-ench">
+      <div class="lsec" id="ench-list"></div>
+      <button class="add" onclick="addEnch()">+ Add Enchantment</button>
+    </div>
+  </div>
+
+  <!-- ATTRIBUTES -->
+  <div class="card" id="card-attr">
+    <div class="chead" onclick="toggleCard('attr')">
+      <input type="checkbox" class="ctoggle" id="tog-attr" onclick="event.stopPropagation()" onchange="onToggle('attr',this.checked)">
+      <span class="ctitle">Attribute Modifiers</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-attr">
+      <div class="lsec" id="attr-list"></div>
+      <button class="add" onclick="addAttr()">+ Add Attribute</button>
+    </div>
+  </div>
+
+  <!-- CONTAINER -->
+  <div class="card" id="card-cont">
+    <div class="chead" onclick="toggleCard('cont')">
+      <input type="checkbox" class="ctoggle" id="tog-cont" onclick="event.stopPropagation()" onchange="onToggle('cont',this.checked)">
+      <span class="ctitle">Container Contents</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-cont">
+      <p style="font-size:12px;color:var(--t3);margin-bottom:10px;">For chest-like items (chest, barrel, shulker_box). Slot 0–26 covers a standard 27-slot chest.</p>
+      <div class="lsec" id="cont-list"></div>
+      <button class="add" onclick="addCont()">+ Add Item Slot</button>
+    </div>
+  </div>
+
+  <!-- MISC -->
+  <div class="card" id="card-misc">
+    <div class="chead" onclick="toggleCard('misc')">
+      <input type="checkbox" class="ctoggle" id="tog-misc" onclick="event.stopPropagation()" onchange="onToggle('misc',this.checked)">
+      <span class="ctitle">Miscellaneous</span>
+      <svg class="chevron" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="cbody hidden" id="body-misc">
+      <div class="grid g2" style="gap:10px;">
+        <div class="fg">
+          <div class="flabel">Damage <div class="tip"><span class="tip-icon" tabindex="0">?</span><div class="tip-box"><b>Damage</b><br>Durability used so far. 0 = brand new. Higher = more worn.</div></div></div>
+          <input type="number" id="misc-dmg" min="0" placeholder="0">
+        </div>
+        <div class="fg">
+          <div class="flabel">Repair Cost <div class="tip"><span class="tip-icon" tabindex="0">?</span><div class="tip-box"><b>Repair Cost</b><br>Anvil repair cost multiplier. Higher = more XP to repair.</div></div></div>
+          <input type="number" id="misc-rep" min="0" placeholder="0">
+        </div>
+        <div class="fg">
+          <div class="flabel">Max Stack Size <div class="tip"><span class="tip-icon" tabindex="0">?</span><div class="tip-box"><b>Max Stack Size</b><br>Overrides default stacking. Range: 1–99.</div></div></div>
+          <input type="number" id="misc-stk" min="1" max="99" placeholder="64">
+        </div>
+        <div class="fg">
+          <div class="flabel">Rarity <div class="tip"><span class="tip-icon" tabindex="0">?</span><div class="tip-box"><b>Rarity</b><br>Changes item name color in tooltip.<br><span style="color:#fff">■</span> Common (white)<br><span style="color:#55ff55">■</span> Uncommon (green)<br><span style="color:#5555ff">■</span> Rare (blue)<br><span style="color:#ff55ff">■</span> Epic (purple)</div></div></div>
+          <select id="misc-rar">
+            <option value="">— none —</option>
+            <option value="common">Common</option>
+            <option value="uncommon">Uncommon</option>
+            <option value="rare">Rare</option>
+            <option value="epic">Epic</option>
+          </select>
+        </div>
+      </div>
+      <div class="div"></div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;">
+        <label class="cbrow"><input type="checkbox" id="misc-glint"><span>Force Enchantment Glint</span></label>
+        <label class="cbrow"><input type="checkbox" id="misc-unbr"><span>Unbreakable</span></label>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- OUTPUT PANEL -->
+<div class="outp">
+  <div class="outp-inner">
+    <button class="genbtn" onclick="generate()">⚡  Generate Entry</button>
+    <div class="orow">
+      <span class="olbl">String</span>
+      <div class="obox empty" id="out-str">Select an item and click Generate</div>
+      <button class="cpybtn" id="cpy-str" onclick="doCopy('str')">Copy</button>
+    </div>
+    <div class="orow">
+      <span class="olbl" style="white-space:nowrap;">
+        Config
+        <div class="tip" style="margin-left:3px;">
+          <span class="tip-icon" tabindex="0">?</span>
+          <div class="tip-box" style="left:auto;right:0;transform:none;top:auto;bottom:22px;"><b>Config JSON format</b><br>Paste this directly into the json5 config file. Quotes inside are escaped so the whole entry is a valid string.</div>
+        </div>
+      </span>
+      <div class="obox empty" id="out-esc">JSON-escaped for config files</div>
+      <button class="cpybtn" id="cpy-esc" onclick="doCopy('esc')">Copy</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+const ITEMS = [
+  {v:'minecraft:wooden_sword',l:'Wooden Sword',g:'Weapons'},
+  {v:'minecraft:stone_sword',l:'Stone Sword',g:'Weapons'},
+  {v:'minecraft:iron_sword',l:'Iron Sword',g:'Weapons'},
+  {v:'minecraft:golden_sword',l:'Golden Sword',g:'Weapons'},
+  {v:'minecraft:diamond_sword',l:'Diamond Sword',g:'Weapons'},
+  {v:'minecraft:netherite_sword',l:'Netherite Sword',g:'Weapons'},
+  {v:'minecraft:bow',l:'Bow',g:'Weapons'},
+  {v:'minecraft:crossbow',l:'Crossbow',g:'Weapons'},
+  {v:'minecraft:trident',l:'Trident',g:'Weapons'},
+  {v:'minecraft:mace',l:'Mace',g:'Weapons'},
+  {v:'minecraft:wooden_axe',l:'Wooden Axe',g:'Tools'},
+  {v:'minecraft:stone_axe',l:'Stone Axe',g:'Tools'},
+  {v:'minecraft:iron_axe',l:'Iron Axe',g:'Tools'},
+  {v:'minecraft:golden_axe',l:'Golden Axe',g:'Tools'},
+  {v:'minecraft:diamond_axe',l:'Diamond Axe',g:'Tools'},
+  {v:'minecraft:netherite_axe',l:'Netherite Axe',g:'Tools'},
+  {v:'minecraft:wooden_pickaxe',l:'Wooden Pickaxe',g:'Tools'},
+  {v:'minecraft:stone_pickaxe',l:'Stone Pickaxe',g:'Tools'},
+  {v:'minecraft:iron_pickaxe',l:'Iron Pickaxe',g:'Tools'},
+  {v:'minecraft:golden_pickaxe',l:'Golden Pickaxe',g:'Tools'},
+  {v:'minecraft:diamond_pickaxe',l:'Diamond Pickaxe',g:'Tools'},
+  {v:'minecraft:netherite_pickaxe',l:'Netherite Pickaxe',g:'Tools'},
+  {v:'minecraft:wooden_shovel',l:'Wooden Shovel',g:'Tools'},
+  {v:'minecraft:stone_shovel',l:'Stone Shovel',g:'Tools'},
+  {v:'minecraft:iron_shovel',l:'Iron Shovel',g:'Tools'},
+  {v:'minecraft:golden_shovel',l:'Golden Shovel',g:'Tools'},
+  {v:'minecraft:diamond_shovel',l:'Diamond Shovel',g:'Tools'},
+  {v:'minecraft:netherite_shovel',l:'Netherite Shovel',g:'Tools'},
+  {v:'minecraft:wooden_hoe',l:'Wooden Hoe',g:'Tools'},
+  {v:'minecraft:stone_hoe',l:'Stone Hoe',g:'Tools'},
+  {v:'minecraft:iron_hoe',l:'Iron Hoe',g:'Tools'},
+  {v:'minecraft:golden_hoe',l:'Golden Hoe',g:'Tools'},
+  {v:'minecraft:diamond_hoe',l:'Diamond Hoe',g:'Tools'},
+  {v:'minecraft:netherite_hoe',l:'Netherite Hoe',g:'Tools'},
+  {v:'minecraft:flint_and_steel',l:'Flint and Steel',g:'Tools'},
+  {v:'minecraft:shears',l:'Shears',g:'Tools'},
+  {v:'minecraft:fishing_rod',l:'Fishing Rod',g:'Tools'},
+  {v:'minecraft:brush',l:'Brush',g:'Tools'},
+  {v:'minecraft:spyglass',l:'Spyglass',g:'Tools'},
+  {v:'minecraft:shield',l:'Shield',g:'Tools'},
+  {v:'minecraft:leather_helmet',l:'Leather Helmet',g:'Armor'},
+  {v:'minecraft:leather_chestplate',l:'Leather Chestplate',g:'Armor'},
+  {v:'minecraft:leather_leggings',l:'Leather Leggings',g:'Armor'},
+  {v:'minecraft:leather_boots',l:'Leather Boots',g:'Armor'},
+  {v:'minecraft:chainmail_helmet',l:'Chainmail Helmet',g:'Armor'},
+  {v:'minecraft:chainmail_chestplate',l:'Chainmail Chestplate',g:'Armor'},
+  {v:'minecraft:chainmail_leggings',l:'Chainmail Leggings',g:'Armor'},
+  {v:'minecraft:chainmail_boots',l:'Chainmail Boots',g:'Armor'},
+  {v:'minecraft:iron_helmet',l:'Iron Helmet',g:'Armor'},
+  {v:'minecraft:iron_chestplate',l:'Iron Chestplate',g:'Armor'},
+  {v:'minecraft:iron_leggings',l:'Iron Leggings',g:'Armor'},
+  {v:'minecraft:iron_boots',l:'Iron Boots',g:'Armor'},
+  {v:'minecraft:golden_helmet',l:'Golden Helmet',g:'Armor'},
+  {v:'minecraft:golden_chestplate',l:'Golden Chestplate',g:'Armor'},
+  {v:'minecraft:golden_leggings',l:'Golden Leggings',g:'Armor'},
+  {v:'minecraft:golden_boots',l:'Golden Boots',g:'Armor'},
+  {v:'minecraft:diamond_helmet',l:'Diamond Helmet',g:'Armor'},
+  {v:'minecraft:diamond_chestplate',l:'Diamond Chestplate',g:'Armor'},
+  {v:'minecraft:diamond_leggings',l:'Diamond Leggings',g:'Armor'},
+  {v:'minecraft:diamond_boots',l:'Diamond Boots',g:'Armor'},
+  {v:'minecraft:netherite_helmet',l:'Netherite Helmet',g:'Armor'},
+  {v:'minecraft:netherite_chestplate',l:'Netherite Chestplate',g:'Armor'},
+  {v:'minecraft:netherite_leggings',l:'Netherite Leggings',g:'Armor'},
+  {v:'minecraft:netherite_boots',l:'Netherite Boots',g:'Armor'},
+  {v:'minecraft:turtle_helmet',l:'Turtle Helmet',g:'Armor'},
+  {v:'minecraft:elytra',l:'Elytra',g:'Armor'},
+  {v:'minecraft:coal',l:'Coal',g:'Materials'},
+  {v:'minecraft:charcoal',l:'Charcoal',g:'Materials'},
+  {v:'minecraft:raw_iron',l:'Raw Iron',g:'Materials'},
+  {v:'minecraft:raw_gold',l:'Raw Gold',g:'Materials'},
+  {v:'minecraft:raw_copper',l:'Raw Copper',g:'Materials'},
+  {v:'minecraft:iron_ingot',l:'Iron Ingot',g:'Materials'},
+  {v:'minecraft:gold_ingot',l:'Gold Ingot',g:'Materials'},
+  {v:'minecraft:copper_ingot',l:'Copper Ingot',g:'Materials'},
+  {v:'minecraft:netherite_ingot',l:'Netherite Ingot',g:'Materials'},
+  {v:'minecraft:netherite_scrap',l:'Netherite Scrap',g:'Materials'},
+  {v:'minecraft:iron_nugget',l:'Iron Nugget',g:'Materials'},
+  {v:'minecraft:gold_nugget',l:'Gold Nugget',g:'Materials'},
+  {v:'minecraft:diamond',l:'Diamond',g:'Materials'},
+  {v:'minecraft:emerald',l:'Emerald',g:'Materials'},
+  {v:'minecraft:lapis_lazuli',l:'Lapis Lazuli',g:'Materials'},
+  {v:'minecraft:quartz',l:'Nether Quartz',g:'Materials'},
+  {v:'minecraft:amethyst_shard',l:'Amethyst Shard',g:'Materials'},
+  {v:'minecraft:prismarine_shard',l:'Prismarine Shard',g:'Materials'},
+  {v:'minecraft:prismarine_crystals',l:'Prismarine Crystals',g:'Materials'},
+  {v:'minecraft:stick',l:'Stick',g:'Materials'},
+  {v:'minecraft:string',l:'String',g:'Materials'},
+  {v:'minecraft:feather',l:'Feather',g:'Materials'},
+  {v:'minecraft:flint',l:'Flint',g:'Materials'},
+  {v:'minecraft:leather',l:'Leather',g:'Materials'},
+  {v:'minecraft:bone',l:'Bone',g:'Materials'},
+  {v:'minecraft:blaze_rod',l:'Blaze Rod',g:'Materials'},
+  {v:'minecraft:blaze_powder',l:'Blaze Powder',g:'Materials'},
+  {v:'minecraft:gunpowder',l:'Gunpowder',g:'Materials'},
+  {v:'minecraft:ender_pearl',l:'Ender Pearl',g:'Materials'},
+  {v:'minecraft:eye_of_ender',l:'Eye of Ender',g:'Materials'},
+  {v:'minecraft:nether_star',l:'Nether Star',g:'Materials'},
+  {v:'minecraft:heart_of_the_sea',l:'Heart of the Sea',g:'Materials'},
+  {v:'minecraft:nautilus_shell',l:'Nautilus Shell',g:'Materials'},
+  {v:'minecraft:phantom_membrane',l:'Phantom Membrane',g:'Materials'},
+  {v:'minecraft:shulker_shell',l:'Shulker Shell',g:'Materials'},
+  {v:'minecraft:dragon_breath',l:"Dragon's Breath",g:'Materials'},
+  {v:'minecraft:ghast_tear',l:'Ghast Tear',g:'Materials'},
+  {v:'minecraft:magma_cream',l:'Magma Cream',g:'Materials'},
+  {v:'minecraft:slime_ball',l:'Slime Ball',g:'Materials'},
+  {v:'minecraft:spider_eye',l:'Spider Eye',g:'Materials'},
+  {v:'minecraft:apple',l:'Apple',g:'Food'},
+  {v:'minecraft:golden_apple',l:'Golden Apple',g:'Food'},
+  {v:'minecraft:enchanted_golden_apple',l:'Enchanted Golden Apple',g:'Food'},
+  {v:'minecraft:bread',l:'Bread',g:'Food'},
+  {v:'minecraft:cooked_beef',l:'Cooked Beef (Steak)',g:'Food'},
+  {v:'minecraft:beef',l:'Raw Beef',g:'Food'},
+  {v:'minecraft:cooked_porkchop',l:'Cooked Porkchop',g:'Food'},
+  {v:'minecraft:porkchop',l:'Raw Porkchop',g:'Food'},
+  {v:'minecraft:cooked_chicken',l:'Cooked Chicken',g:'Food'},
+  {v:'minecraft:chicken',l:'Raw Chicken',g:'Food'},
+  {v:'minecraft:cooked_mutton',l:'Cooked Mutton',g:'Food'},
+  {v:'minecraft:carrot',l:'Carrot',g:'Food'},
+  {v:'minecraft:golden_carrot',l:'Golden Carrot',g:'Food'},
+  {v:'minecraft:baked_potato',l:'Baked Potato',g:'Food'},
+  {v:'minecraft:cookie',l:'Cookie',g:'Food'},
+  {v:'minecraft:pumpkin_pie',l:'Pumpkin Pie',g:'Food'},
+  {v:'minecraft:melon_slice',l:'Melon Slice',g:'Food'},
+  {v:'minecraft:mushroom_stew',l:'Mushroom Stew',g:'Food'},
+  {v:'minecraft:rabbit_stew',l:'Rabbit Stew',g:'Food'},
+  {v:'minecraft:honey_bottle',l:'Honey Bottle',g:'Food'},
+  {v:'minecraft:sweet_berries',l:'Sweet Berries',g:'Food'},
+  {v:'minecraft:glow_berries',l:'Glow Berries',g:'Food'},
+  {v:'minecraft:dried_kelp',l:'Dried Kelp',g:'Food'},
+  {v:'minecraft:potion',l:'Potion',g:'Potions & Arrows'},
+  {v:'minecraft:splash_potion',l:'Splash Potion',g:'Potions & Arrows'},
+  {v:'minecraft:lingering_potion',l:'Lingering Potion',g:'Potions & Arrows'},
+  {v:'minecraft:arrow',l:'Arrow',g:'Potions & Arrows'},
+  {v:'minecraft:tipped_arrow',l:'Tipped Arrow',g:'Potions & Arrows'},
+  {v:'minecraft:spectral_arrow',l:'Spectral Arrow',g:'Potions & Arrows'},
+  {v:'minecraft:experience_bottle',l:"Bottle o' Enchanting",g:'Potions & Arrows'},
+  {v:'minecraft:book',l:'Book',g:'Books'},
+  {v:'minecraft:enchanted_book',l:'Enchanted Book',g:'Books'},
+  {v:'minecraft:writable_book',l:'Book and Quill',g:'Books'},
+  {v:'minecraft:written_book',l:'Written Book',g:'Books'},
+  {v:'minecraft:knowledge_book',l:'Knowledge Book',g:'Books'},
+  {v:'minecraft:paper',l:'Paper',g:'Books'},
+  {v:'minecraft:compass',l:'Compass',g:'Utility'},
+  {v:'minecraft:recovery_compass',l:'Recovery Compass',g:'Utility'},
+  {v:'minecraft:clock',l:'Clock',g:'Utility'},
+  {v:'minecraft:map',l:'Empty Map',g:'Utility'},
+  {v:'minecraft:saddle',l:'Saddle',g:'Utility'},
+  {v:'minecraft:lead',l:'Lead',g:'Utility'},
+  {v:'minecraft:name_tag',l:'Name Tag',g:'Utility'},
+  {v:'minecraft:bundle',l:'Bundle',g:'Utility'},
+  {v:'minecraft:firework_rocket',l:'Firework Rocket',g:'Utility'},
+  {v:'minecraft:totem_of_undying',l:'Totem of Undying',g:'Utility'},
+  {v:'minecraft:goat_horn',l:'Goat Horn',g:'Utility'},
+  {v:'minecraft:chest',l:'Chest',g:'Containers'},
+  {v:'minecraft:trapped_chest',l:'Trapped Chest',g:'Containers'},
+  {v:'minecraft:ender_chest',l:'Ender Chest',g:'Containers'},
+  {v:'minecraft:barrel',l:'Barrel',g:'Containers'},
+  {v:'minecraft:shulker_box',l:'Shulker Box',g:'Containers'},
+  {v:'minecraft:white_shulker_box',l:'White Shulker Box',g:'Containers'},
+  {v:'minecraft:orange_shulker_box',l:'Orange Shulker Box',g:'Containers'},
+  {v:'minecraft:magenta_shulker_box',l:'Magenta Shulker Box',g:'Containers'},
+  {v:'minecraft:light_blue_shulker_box',l:'Light Blue Shulker Box',g:'Containers'},
+  {v:'minecraft:yellow_shulker_box',l:'Yellow Shulker Box',g:'Containers'},
+  {v:'minecraft:lime_shulker_box',l:'Lime Shulker Box',g:'Containers'},
+  {v:'minecraft:pink_shulker_box',l:'Pink Shulker Box',g:'Containers'},
+  {v:'minecraft:gray_shulker_box',l:'Gray Shulker Box',g:'Containers'},
+  {v:'minecraft:cyan_shulker_box',l:'Cyan Shulker Box',g:'Containers'},
+  {v:'minecraft:purple_shulker_box',l:'Purple Shulker Box',g:'Containers'},
+  {v:'minecraft:blue_shulker_box',l:'Blue Shulker Box',g:'Containers'},
+  {v:'minecraft:black_shulker_box',l:'Black Shulker Box',g:'Containers'},
+  {v:'minecraft:obsidian',l:'Obsidian',g:'Blocks'},
+  {v:'minecraft:crying_obsidian',l:'Crying Obsidian',g:'Blocks'},
+  {v:'minecraft:ancient_debris',l:'Ancient Debris',g:'Blocks'},
+  {v:'minecraft:beacon',l:'Beacon',g:'Blocks'},
+  {v:'minecraft:dragon_egg',l:'Dragon Egg',g:'Blocks'},
+  {v:'minecraft:conduit',l:'Conduit',g:'Blocks'},
+  {v:'minecraft:nether_star',l:'Nether Star Block',g:'Blocks'},
+  {v:'minecraft:sea_lantern',l:'Sea Lantern',g:'Blocks'},
+  {v:'minecraft:shroomlight',l:'Shroomlight',g:'Blocks'},
+  {v:'minecraft:glowstone',l:'Glowstone',g:'Blocks'},
+  {v:'minecraft:torch',l:'Torch',g:'Blocks'},
+  {v:'minecraft:lantern',l:'Lantern',g:'Blocks'},
+  {v:'minecraft:soul_lantern',l:'Soul Lantern',g:'Blocks'},
+  {v:'minecraft:tnt',l:'TNT',g:'Blocks'},
+  {v:'minecraft:respawn_anchor',l:'Respawn Anchor',g:'Blocks'},
+  {v:'minecraft:lodestone',l:'Lodestone',g:'Blocks'},
+];
+
+const ENCHANTS = [
+  {v:'sharpness',l:'Sharpness',m:5,c:'Sword'},
+  {v:'smite',l:'Smite',m:5,c:'Sword'},
+  {v:'bane_of_arthropods',l:'Bane of Arthropods',m:5,c:'Sword'},
+  {v:'knockback',l:'Knockback',m:2,c:'Sword'},
+  {v:'fire_aspect',l:'Fire Aspect',m:2,c:'Sword'},
+  {v:'looting',l:'Looting',m:3,c:'Sword'},
+  {v:'sweeping_edge',l:'Sweeping Edge',m:3,c:'Sword'},
+  {v:'efficiency',l:'Efficiency',m:5,c:'Tool'},
+  {v:'silk_touch',l:'Silk Touch',m:1,c:'Tool'},
+  {v:'fortune',l:'Fortune',m:3,c:'Tool'},
+  {v:'power',l:'Power',m:5,c:'Bow'},
+  {v:'punch',l:'Punch',m:2,c:'Bow'},
+  {v:'flame',l:'Flame',m:1,c:'Bow'},
+  {v:'infinity',l:'Infinity',m:1,c:'Bow'},
+  {v:'multishot',l:'Multishot',m:1,c:'Crossbow'},
+  {v:'quick_charge',l:'Quick Charge',m:3,c:'Crossbow'},
+  {v:'piercing',l:'Piercing',m:4,c:'Crossbow'},
+  {v:'loyalty',l:'Loyalty',m:3,c:'Trident'},
+  {v:'impaling',l:'Impaling',m:5,c:'Trident'},
+  {v:'riptide',l:'Riptide',m:3,c:'Trident'},
+  {v:'channeling',l:'Channeling',m:1,c:'Trident'},
+  {v:'protection',l:'Protection',m:4,c:'Armor'},
+  {v:'fire_protection',l:'Fire Protection',m:4,c:'Armor'},
+  {v:'blast_protection',l:'Blast Protection',m:4,c:'Armor'},
+  {v:'projectile_protection',l:'Projectile Protection',m:4,c:'Armor'},
+  {v:'feather_falling',l:'Feather Falling',m:4,c:'Armor'},
+  {v:'thorns',l:'Thorns',m:3,c:'Armor'},
+  {v:'respiration',l:'Respiration',m:3,c:'Armor'},
+  {v:'aqua_affinity',l:'Aqua Affinity',m:1,c:'Armor'},
+  {v:'depth_strider',l:'Depth Strider',m:3,c:'Armor'},
+  {v:'frost_walker',l:'Frost Walker',m:2,c:'Armor'},
+  {v:'soul_speed',l:'Soul Speed',m:3,c:'Armor'},
+  {v:'swift_sneak',l:'Swift Sneak',m:3,c:'Armor'},
+  {v:'density',l:'Density',m:5,c:'Mace'},
+  {v:'breach',l:'Breach',m:4,c:'Mace'},
+  {v:'wind_burst',l:'Wind Burst',m:3,c:'Mace'},
+  {v:'luck_of_the_sea',l:'Luck of the Sea',m:3,c:'Fishing'},
+  {v:'lure',l:'Lure',m:3,c:'Fishing'},
+  {v:'mending',l:'Mending',m:1,c:'Universal'},
+  {v:'unbreaking',l:'Unbreaking',m:3,c:'Universal'},
+  {v:'curse_of_vanishing',l:'Curse of Vanishing',m:1,c:'Curses'},
+  {v:'curse_of_binding',l:'Curse of Binding',m:1,c:'Curses'},
+];
+
+const ATTRS = [
+  {v:'attack_damage',l:'Attack Damage'},
+  {v:'attack_speed',l:'Attack Speed'},
+  {v:'attack_knockback',l:'Attack Knockback'},
+  {v:'armor',l:'Armor'},
+  {v:'armor_toughness',l:'Armor Toughness'},
+  {v:'max_health',l:'Max Health'},
+  {v:'movement_speed',l:'Movement Speed'},
+  {v:'knockback_resistance',l:'Knockback Resistance'},
+  {v:'luck',l:'Luck'},
+  {v:'block_break_speed',l:'Block Break Speed'},
+  {v:'block_interaction_range',l:'Block Interaction Range'},
+  {v:'entity_interaction_range',l:'Entity Interaction Range'},
+  {v:'gravity',l:'Gravity'},
+  {v:'jump_strength',l:'Jump Strength'},
+  {v:'flying_speed',l:'Flying Speed'},
+  {v:'fall_damage_multiplier',l:'Fall Damage Multiplier'},
+  {v:'safe_fall_distance',l:'Safe Fall Distance'},
+  {v:'scale',l:'Scale'},
+  {v:'step_height',l:'Step Height'},
+  {v:'sneaking_speed',l:'Sneaking Speed'},
+  {v:'max_absorption',l:'Max Absorption'},
+  {v:'sweeping_damage_ratio',l:'Sweeping Damage Ratio'},
+  {v:'mining_efficiency',l:'Mining Efficiency'},
+  {v:'oxygen_bonus',l:'Oxygen Bonus'},
+];
+
+const MC_COLORS = [
+  {n:'black',h:'#000000'},{n:'dark_blue',h:'#0000AA'},{n:'dark_green',h:'#00AA00'},
+  {n:'dark_aqua',h:'#00AAAA'},{n:'dark_red',h:'#AA0000'},{n:'dark_purple',h:'#AA00AA'},
+  {n:'gold',h:'#FFAA00'},{n:'gray',h:'#AAAAAA'},{n:'dark_gray',h:'#555555'},
+  {n:'blue',h:'#5555FF'},{n:'green',h:'#55FF55'},{n:'aqua',h:'#55FFFF'},
+  {n:'red',h:'#FF5555'},{n:'light_purple',h:'#FF55FF'},{n:'yellow',h:'#FFFF55'},
+  {n:'white',h:'#FFFFFF'},
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+let selItem = null; // {v, l}
+let loreLines = []; // {id, text, color, bold, italic}
+let enchList = [];  // {id, enchId, level}
+let attrList = [];  // {id, type, amount, op, slot}
+let contList = [];  // {id, slot, itemId, count, name}
+let _uid = 0;
+const uid = () => ++_uid;
+
+// ── SEARCHABLE SELECT ─────────────────────────────────────────────────────────
+
+function initSS() {
+  const input = document.getElementById('ss-input');
+  const drop = document.getElementById('ss-drop');
+
+  const open = (items) => {
+    renderDrop(items || ITEMS);
+    drop.classList.remove('h');
+  };
+  const close = () => {
+    drop.classList.add('h');
+    input.value = selItem ? selItem.l : '';
+  };
+
+  input.addEventListener('focus', () => open());
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    open(q ? ITEMS.filter(i => i.l.toLowerCase().includes(q) || i.v.includes(q)) : ITEMS);
+  });
+  input.addEventListener('blur', () => setTimeout(close, 160));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+}
+
+function renderDrop(items) {
+  const drop = document.getElementById('ss-drop');
+  const groups = {};
+  items.forEach(i => { (groups[i.g] = groups[i.g] || []).push(i); });
+
+  let html = '';
+  for (const [g, arr] of Object.entries(groups)) {
+    html += `<div class="ss-grp">${g}</div>`;
+    arr.forEach(i => {
+      const sel = selItem && selItem.v === i.v ? ' sel' : '';
+      const shortId = i.v.replace('minecraft:', '');
+      html += `<div class="ss-opt${sel}" onmousedown="pickItem('${i.v}','${i.l.replace(/'/g,"\\'")}')"><span class="ss-opt-id">${shortId}</span>${i.l}</div>`;
+    });
+  }
+  if (!items.length) html = '<div class="ss-empty">No items found</div>';
+  drop.innerHTML = html;
+}
+
+function pickItem(v, l) {
+  selItem = { v, l };
+  document.getElementById('ss-input').value = l;
+  document.getElementById('ss-drop').classList.add('h');
+}
+
+// ── CARD ACCORDION ────────────────────────────────────────────────────────────
+
+function toggleCard(id) {
+  const body = document.getElementById('body-' + id);
+  const head = document.querySelector('#card-' + id + ' .chead');
+  const tog = document.getElementById('tog-' + id);
+  const willOpen = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !willOpen);
+  head.classList.toggle('open', willOpen);
+  if (tog && willOpen) { tog.checked = true; }
+  if (!willOpen && tog) { tog.checked = false; }
+}
+
+function onToggle(id, checked) {
+  const body = document.getElementById('body-' + id);
+  const head = document.querySelector('#card-' + id + ' .chead');
+  body.classList.toggle('hidden', !checked);
+  head.classList.toggle('open', checked);
+}
+
+// ── COLOR PICKER ──────────────────────────────────────────────────────────────
+
+function buildColor(wrapId, colorId) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  const swHtml = MC_COLORS.map((c, i) =>
+    `<div class="sw" style="background:${c.h}" title="${c.n}" onclick="pickColor('${colorId}','${c.n}','${c.h}',${i})"></div>`
+  ).join('');
+  wrap.innerHTML = `
+    <div class="swatches" id="sw-${colorId}">${swHtml}</div>
+    <div class="col-row">
+      <input type="text" id="ci-${colorId}" placeholder="#RRGGBB or color name" oninput="onColorType('${colorId}',this.value)">
+      <div class="col-preview" id="cp-${colorId}"></div>
+      <button class="col-clr" onclick="clearColor('${colorId}')">✕</button>
+    </div>`;
+}
+
+function pickColor(id, name, hex, idx) {
+  document.getElementById('ci-' + id).value = name;
+  document.getElementById('cp-' + id).style.background = hex;
+  document.querySelectorAll(`#sw-${id} .sw`).forEach((s,i) => s.classList.toggle('on', i === idx));
+}
+
+function onColorType(id, val) {
+  const mc = MC_COLORS.find(c => c.n === val.toLowerCase());
+  document.getElementById('cp-' + id).style.background = mc ? mc.h : (val.startsWith('#') ? val : '');
+  document.querySelectorAll(`#sw-${id} .sw`).forEach((s,i) => s.classList.toggle('on', mc && MC_COLORS[i].n === mc.n));
+}
+
+function clearColor(id) {
+  document.getElementById('ci-' + id).value = '';
+  document.getElementById('cp-' + id).style.background = '';
+  document.querySelectorAll(`#sw-${id} .sw`).forEach(s => s.classList.remove('on'));
+}
+
+function getColor(id) { return (document.getElementById('ci-' + id)?.value || '').trim(); }
+
+// ── LORE ─────────────────────────────────────────────────────────────────────
+
+function addLore() {
+  loreLines.push({ id: uid(), text: '', color: '', bold: false, italic: false });
+  renderLore();
+}
+
+function rmLore(id) {
+  loreLines = loreLines.filter(l => l.id !== id);
+  renderLore();
+}
+
+function toggleLoreStyle(id) {
+  const panel = document.getElementById('ls-' + id);
+  const btn = document.getElementById('lsb-' + id);
+  const on = panel.classList.toggle('on');
+  btn.classList.toggle('on', on);
+}
+
+function renderLore() {
+  const c = document.getElementById('lore-list');
+  c.innerHTML = '';
+  loreLines.forEach((line, idx) => {
+    const d = document.createElement('div');
+    d.className = 'litem';
+    d.style.flexDirection = 'column';
+    d.innerHTML = `
+      <div style="display:flex;gap:7px;align-items:center;width:100%;">
+        <span style="color:var(--t3);font-size:10px;font-family:var(--fm);min-width:14px;">${idx+1}</span>
+        <input type="text" value="${eh(line.text)}" placeholder="Lore line text…" style="flex:1;" oninput="loreLines[${idx}].text=this.value">
+        <button class="lore-style-toggle${line.color||line.bold||line.italic?' on':''}" id="lsb-${line.id}" onclick="toggleLoreStyle(${line.id})" title="Style options">✦ Style</button>
+        <button class="rm" onclick="rmLore(${line.id})">✕</button>
+      </div>
+      <div class="lore-style-panel${line.color||line.bold||line.italic?' on':''}" id="ls-${line.id}">
+        <div class="grid g2" style="gap:10px;margin-top:8px;">
+          <div class="fg">
+            <div class="flabel" style="font-size:10px;">Color</div>
+            <div id="lc-${line.id}"></div>
+          </div>
+          <div class="fg">
+            <div class="flabel" style="font-size:10px;">Style</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-top:3px;">
+              <label class="cbrow"><input type="checkbox" ${line.bold?'checked':''} oninput="loreLines[${idx}].bold=this.checked"><span style="font-weight:700;">Bold</span></label>
+              <label class="cbrow"><input type="checkbox" ${line.italic?'checked':''} oninput="loreLines[${idx}].italic=this.checked"><span style="font-style:italic;">Italic</span></label>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    c.appendChild(d);
+    buildColor('lc-' + line.id, 'lore-' + line.id);
+    if (line.color) {
+      const mc = MC_COLORS.find(c => c.n === line.color);
+      if (mc) {
+        const idx2 = MC_COLORS.indexOf(mc);
+        pickColor('lore-' + line.id, mc.n, mc.h, idx2);
+      } else {
+        const ci = document.getElementById('ci-lore-' + line.id);
+        if (ci) { ci.value = line.color; onColorType('lore-' + line.id, line.color); }
+      }
+    }
+  });
+}
+
+// ── ENCHANTMENTS ──────────────────────────────────────────────────────────────
+
+function addEnch() {
+  enchList.push({ id: uid(), enchId: '', level: 1 });
+  renderEnch();
+}
+
+function rmEnch(id) {
+  enchList = enchList.filter(e => e.id !== id);
+  renderEnch();
+}
+
+function renderEnch() {
+  const c = document.getElementById('ench-list');
+  c.innerHTML = '';
+  const cats = {};
+  ENCHANTS.forEach(e => { (cats[e.c] = cats[e.c] || []).push(e); });
+  const opts = Object.entries(cats).map(([cat, arr]) =>
+    `<optgroup label="${cat}">${arr.map(e => `<option value="${e.v}">${e.l} (max ${e.m})</option>`).join('')}</optgroup>`
+  ).join('');
+
+  enchList.forEach((e, idx) => {
+    const d = document.createElement('div');
+    d.className = 'litem';
+    d.innerHTML = `
+      <div class="lfields">
+        <div class="fg" style="flex:3;min-width:150px;">
+          <div class="flabel">Enchantment</div>
+          <select oninput="enchList[${idx}].enchId=this.value"><option value="">— Select —</option>${opts}</select>
+        </div>
+        <div class="fg" style="flex:1;min-width:70px;">
+          <div class="flabel">Level</div>
+          <input type="number" value="${e.level}" min="1" max="255" oninput="enchList[${idx}].level=parseInt(this.value)||1">
+        </div>
+      </div>
+      <button class="rm" onclick="rmEnch(${e.id})">✕</button>`;
+    c.appendChild(d);
+    d.querySelector('select').value = e.enchId;
+  });
+}
+
+// ── ATTRIBUTES ────────────────────────────────────────────────────────────────
+
+function addAttr() {
+  attrList.push({ id: uid(), type: '', amount: 1, op: 'add_value', slot: 'any' });
+  renderAttr();
+}
+
+function rmAttr(id) {
+  attrList = attrList.filter(a => a.id !== id);
+  renderAttr();
+}
+
+function renderAttr() {
+  const c = document.getElementById('attr-list');
+  c.innerHTML = '';
+  const attrOpts = ATTRS.map(a => `<option value="${a.v}">${a.l}</option>`).join('');
+
+  attrList.forEach((a, idx) => {
+    const d = document.createElement('div');
+    d.className = 'litem';
+    d.innerHTML = `
+      <div class="lfields" style="flex-wrap:wrap;">
+        <div class="fg" style="flex:2;min-width:140px;">
+          <div class="flabel">Attribute</div>
+          <select oninput="attrList[${idx}].type=this.value"><option value="">— Select —</option>${attrOpts}</select>
+        </div>
+        <div class="fg" style="flex:1;min-width:80px;">
+          <div class="flabel">Amount</div>
+          <input type="number" value="${a.amount}" step="0.01" oninput="attrList[${idx}].amount=parseFloat(this.value)||0">
+        </div>
+        <div class="fg" style="flex:2;min-width:130px;">
+          <div class="flabel">Operation</div>
+          <select oninput="attrList[${idx}].op=this.value">
+            <option value="add_value">Add Value</option>
+            <option value="add_multiplied_base">Multiply Base</option>
+            <option value="add_multiplied_total">Multiply Total</option>
+          </select>
+        </div>
+        <div class="fg" style="flex:1;min-width:95px;">
+          <div class="flabel">Slot</div>
+          <select oninput="attrList[${idx}].slot=this.value">
+            <option value="any">Any</option>
+            <option value="mainhand">Main Hand</option>
+            <option value="offhand">Off Hand</option>
+            <option value="hand">Any Hand</option>
+            <option value="head">Head</option>
+            <option value="chest">Chest</option>
+            <option value="legs">Legs</option>
+            <option value="feet">Feet</option>
+            <option value="armor">Any Armor</option>
+          </select>
+        </div>
+      </div>
+      <button class="rm" onclick="rmAttr(${a.id})">✕</button>`;
+    c.appendChild(d);
+    const sels = d.querySelectorAll('select');
+    sels[0].value = a.type;
+    sels[1].value = a.op;
+    sels[2].value = a.slot;
+  });
+}
+
+// ── CONTAINER ─────────────────────────────────────────────────────────────────
+
+function addCont() {
+  contList.push({ id: uid(), slot: contList.length, itemId: '', count: 1, name: '' });
+  renderCont();
+}
+
+function rmCont(id) {
+  contList = contList.filter(s => s.id !== id);
+  renderCont();
+}
+
+function renderCont() {
+  const c = document.getElementById('cont-list');
+  c.innerHTML = '';
+  contList.forEach((s, idx) => {
+    const d = document.createElement('div');
+    d.className = 'litem';
+    d.innerHTML = `
+      <div class="lfields" style="flex-wrap:wrap;">
+        <div class="fg" style="flex:0 0 65px;min-width:65px;">
+          <div class="flabel">Slot</div>
+          <input type="number" value="${s.slot}" min="0" max="255" oninput="contList[${idx}].slot=parseInt(this.value)||0">
+        </div>
+        <div class="fg" style="flex:2;min-width:130px;">
+          <div class="flabel">Item ID</div>
+          <input type="text" value="${eh(s.itemId)}" placeholder="e.g. diamond" oninput="contList[${idx}].itemId=this.value">
+        </div>
+        <div class="fg" style="flex:0 0 65px;min-width:65px;">
+          <div class="flabel">Count</div>
+          <input type="number" value="${s.count}" min="1" max="99" oninput="contList[${idx}].count=parseInt(this.value)||1">
+        </div>
+        <div class="fg" style="flex:2;min-width:120px;">
+          <div class="flabel">Name (opt.)</div>
+          <input type="text" value="${eh(s.name)}" placeholder="Custom name" oninput="contList[${idx}].name=this.value">
+        </div>
+      </div>
+      <button class="rm" onclick="rmCont(${s.id})">✕</button>`;
+    c.appendChild(d);
+  });
+}
+
+// ── BUILD JSON ────────────────────────────────────────────────────────────────
+
+function buildJSON() {
+  const json = {};
+
+  // Name
+  if (document.getElementById('tog-name')?.checked) {
+    const txt = (document.getElementById('name-txt')?.value || '').trim();
+    if (txt) {
+      const color = getColor('name');
+      const bold = document.getElementById('name-bold')?.checked;
+      const italic = document.getElementById('name-italic')?.checked;
+      const under = document.getElementById('name-under')?.checked;
+      if (!color && !bold && !italic && !under) {
+        json.name = txt;
+      } else {
+        json.name = { text: txt };
+        if (color) json.name.color = color;
+        if (bold) json.name.bold = true;
+        if (italic) json.name.italic = true;
+        if (under) json.name.underlined = true;
+      }
+    }
+  }
+
+  // Lore
+  if (document.getElementById('tog-lore')?.checked && loreLines.length) {
+    const lines = loreLines
+      .map((line, idx) => {
+        const color = getColor('lore-' + line.id);
+        const el = document.querySelectorAll('#lore-list .litem')[idx];
+        const bold = el?.querySelectorAll('input[type=checkbox]')[0]?.checked || false;
+        const italic = el?.querySelectorAll('input[type=checkbox]')[1]?.checked || false;
+        if (!color && !bold && !italic) return line.text;
+        const o = { text: line.text };
+        if (color) o.color = color;
+        if (bold) o.bold = true;
+        if (italic) o.italic = true;
+        return o;
+      })
+      .filter(l => (typeof l === 'string' ? l : l.text).length > 0);
+    if (lines.length) json.lore = lines;
+  }
+
+  // Enchantments
+  if (document.getElementById('tog-ench')?.checked && enchList.length) {
+    const obj = {};
+    enchList.forEach(e => { if (e.enchId) obj[e.enchId] = e.level || 1; });
+    if (Object.keys(obj).length) json.enchantments = obj;
+  }
+
+  // Attributes
+  if (document.getElementById('tog-attr')?.checked && attrList.length) {
+    const arr = attrList.filter(a => a.type).map(a => ({
+      type: a.type, amount: a.amount,
+      operation: a.op || 'add_value', slot: a.slot || 'any',
+    }));
+    if (arr.length) json.attributes = arr;
+  }
+
+  // Container
+  if (document.getElementById('tog-cont')?.checked && contList.length) {
+    const arr = contList.filter(s => s.itemId.trim()).map(s => {
+      const o = { slot: s.slot, id: s.itemId.includes(':') ? s.itemId : 'minecraft:' + s.itemId, count: s.count };
+      if (s.name?.trim()) o.name = s.name.trim();
+      return o;
+    });
+    if (arr.length) json.container = arr;
+  }
+
+  // Misc
+  if (document.getElementById('tog-misc')?.checked) {
+    const dmg = document.getElementById('misc-dmg')?.value;
+    const rep = document.getElementById('misc-rep')?.value;
+    const stk = document.getElementById('misc-stk')?.value;
+    const rar = document.getElementById('misc-rar')?.value;
+    const glint = document.getElementById('misc-glint')?.checked;
+    const unbr = document.getElementById('misc-unbr')?.checked;
+    if (dmg !== '') { const n = parseInt(dmg); if (!isNaN(n)) json.damage = n; }
+    if (rep !== '') { const n = parseInt(rep); if (!isNaN(n)) json.repair_cost = n; }
+    if (stk !== '') { const n = parseInt(stk); if (!isNaN(n)) json.max_stack_size = n; }
+    if (rar) json.rarity = rar;
+    if (glint) json.glint = true;
+    if (unbr) json.unbreakable = true;
+  }
+
+  return json;
+}
+
+// ── GENERATE ─────────────────────────────────────────────────────────────────
+
+function generate() {
+  const strBox = document.getElementById('out-str');
+  const escBox = document.getElementById('out-esc');
+
+  if (!selItem) {
+    strBox.textContent = '⚠  Please select an item first';
+    strBox.className = 'obox empty';
+    escBox.textContent = '';
+    escBox.className = 'obox empty';
+    return;
+  }
+
+  const minV = (document.getElementById('min-amt')?.value || '').trim();
+  const maxV = (document.getElementById('max-amt')?.value || '').trim();
+  let amt = '';
+  if (minV) { amt = minV; if (maxV && maxV !== minV) amt += '-' + maxV; amt += ' '; }
+
+  const json = buildJSON();
+  const jsonStr = Object.keys(json).length ? JSON.stringify(json) : '';
+  const plain = amt + selItem.v + jsonStr;
+  const escaped = '"' + plain.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+
+  strBox.textContent = plain;
+  strBox.className = 'obox';
+  escBox.textContent = escaped;
+  escBox.className = 'obox';
+}
+
+function doCopy(type) {
+  const box = document.getElementById(type === 'str' ? 'out-str' : 'out-esc');
+  const btn = document.getElementById(type === 'str' ? 'cpy-str' : 'cpy-esc');
+  if (box.classList.contains('empty') || !box.textContent) return;
+  navigator.clipboard.writeText(box.textContent).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function eh(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSS();
+  buildColor('name-color', 'name');
+});
+</script>
+</body>
+</html>
